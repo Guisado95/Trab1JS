@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trabalho 1 de JavaScript</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: red; 
+            color: white; 
+            text-align: center;
+            padding: 20px 0;
+        }
+        .logo {
+            width: 150px; 
+            margin-bottom: 20px;
+        }
+        .banner {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .form-container {
+            text-align: center;
+            padding: 20px;
+            background-color: red f2f2f2;
+            border: 2px solid red;
+            margin: 20px;
+            border-radius: 10px;
+        }
+        .form-container input {
+            padding: 10px;
+            font-size: 16px;
+            width: 60%;
+            margin: 10px 0;
+            border: 2px solid red;
+            border-radius: 5px;
+        }
+        .form-container button {
+            padding: 10px 20px;
+            background-color:red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .form-container button:hover {
+            background-color: rgba(22, 7, 7, 0.884);
+        }
+        .content {
+            font: 40pt;
+            text-align: center;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="imagem/internacional.svg" alt="Logo" class="logo">
+        <div class="banner">O maior do Rio Grande do Sul!</div>
+    </div>
+    <div class="form-container">
+        <h2>Newsletter Colorada:</h2>
+        <form action="#" method="post">
+        
+            <input type="email" id="userEmail" placeholder="Digite seu e-mail aqui">
+            <button type="button" onclick="exibirTexto()">Enviar</button>
+        </form>
+        <div id="textoExibido"></div>
+    </div>
+    <div class="content">
+        <p><strong>116 ANOS DE HISTÓRIA!</strong></p>
+    </div>
+    <script>
+        function exibirTexto() {
+            const userEmail = document.getElementById('userEmail').value;
+            document.getElementById('textoExibido').innerText = "O Clube do Povo agradece! Pense em tornar-se sócio!";
+        }
+    </script>
+</body>
+</html>

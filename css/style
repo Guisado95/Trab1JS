@@ -1,0 +1,14 @@
+#generatedHeader img {
+  max-height: 100px;
+  max-width: 200px;
+}
+
+#generatedHeader p {
+  margin: 0;
+}
+
+#generatedHeader form {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}

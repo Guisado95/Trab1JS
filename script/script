@@ -1,10 +1,21 @@
 document.getElementById("applyChanges").addEventListener("click", () => {
   const logoFile = document.getElementById("logoFile").files[0];
-  const headerText = document.getElementById("headerText").value;
+  const headerText = document.getElementById("headerText").value.trim();
   const bgColor = document.getElementById("bgColor").value;
   const textColor = document.getElementById("textColor").value;
+  const fontSize = document.getElementById("fontSize").value;
+  const textAlign = document.getElementById("textAlign").value;
   const borderStyle = document.getElementById("borderStyle").value;
   const headerHeight = document.getElementById("headerHeight").value;
+  const gapSize = document.getElementById("gapSize").value;
+
+  const msg = document.getElementById("msg");
+  msg.textContent = "";
+
+  if (!logoFile || !logoFile.type.startsWith('image/')) {
+    msg.textContent = "Por favor, selecione uma imagem válida.";
+    return;
+  }
 
   const header = document.getElementById("generatedHeader");
   header.innerHTML = "";
@@ -13,23 +24,40 @@ document.getElementById("applyChanges").addEventListener("click", () => {
   header.style.color = textColor;
   header.style.border = `2px ${borderStyle} ${textColor}`;
   header.style.height = `${headerHeight}px`;
+  header.style.gap = `${gapSize}px`;
+  header.style.justifyContent = textAlign;
 
-  // Inserir imagem, se selecionada
-  if (logoFile && logoFile.type.startsWith('image/')) {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const img = document.createElement("img");
-      img.src = e.target.result;
-      img.alt = "Logo";
-      header.appendChild(img);
-    };
-    reader.readAsDataURL(logoFile);
-  }
+  // Adicionar imagem
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const img = document.createElement("img");
+    img.src = e.target.result;
+    img.alt = "Logo";
+    header.appendChild(img);
+  };
+  reader.readAsDataURL(logoFile);
 
-  // Inserir texto
+  // Adicionar texto
   if (headerText) {
     const text = document.createElement("p");
     text.textContent = headerText;
+    text.style.fontSize = `${fontSize}px`;
     header.appendChild(text);
   }
+
+  // Adicionar formulário (terceiro elemento)
+  const form = document.createElement("form");
+  form.onsubmit = e => e.preventDefault(); // não envia de verdade
+  const inputEmail = document.createElement("input");
+  inputEmail.type = "email";
+  inputEmail.placeholder = "Seu e-mail";
+  inputEmail.className = "form-control";
+  inputEmail.style.width = "180px";
+  const button = document.createElement("button");
+  button.type = "submit";
+  button.textContent = "Inscreva-se";
+  button.className = "btn btn-sm btn-success";
+  form.appendChild(inputEmail);
+  form.appendChild(button);
+  header.appendChild(form);
 });

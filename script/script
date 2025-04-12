@@ -12,52 +12,83 @@ document.getElementById("applyChanges").addEventListener("click", () => {
   const msg = document.getElementById("msg");
   msg.textContent = "";
 
-  if (!logoFile || !logoFile.type.startsWith('image/')) {
-    msg.textContent = "Por favor, selecione uma imagem válida.";
-    return;
-  }
-
   const header = document.getElementById("generatedHeader");
   header.innerHTML = "";
 
+  // Aplicar estilos no contêiner
   header.style.backgroundColor = bgColor;
   header.style.color = textColor;
   header.style.border = `2px ${borderStyle} ${textColor}`;
   header.style.height = `${headerHeight}px`;
   header.style.gap = `${gapSize}px`;
   header.style.justifyContent = textAlign;
+  header.style.display = "flex";
+  header.style.flexWrap = "wrap";
+  header.style.alignItems = "center";
+  header.style.padding = "1rem";
 
-  // Adicionar imagem
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    const img = document.createElement("img");
-    img.src = e.target.result;
-    img.alt = "Logo";
-    header.appendChild(img);
+  // Função para adicionar elementos ao header após leitura da imagem
+  const montarHeader = (imageDataURL = null) => {
+    // Adicionar imagem, se houver
+    if (imageDataURL) {
+      const img = document.createElement("img");
+      img.src = imageDataURL;
+      img.alt = "Logo";
+      header.appendChild(img);
+    }
+
+    // Adicionar texto, se houver
+    if (headerText) {
+      const text = document.createElement("p");
+      text.textContent = headerText;
+      text.style.fontSize = `${fontSize}px`;
+      header.appendChild(text);
+    }
+
+    // Adicionar formulário
+    const form = document.createElement("form");
+    form.onsubmit = e => e.preventDefault();
+
+    const inputEmail = document.createElement("input");
+    inputEmail.type = "email";
+    inputEmail.placeholder = "Seu e-mail";
+    inputEmail.className = "form-control";
+    inputEmail.style.width = "180px";
+
+    const button = document.createElement("button");
+    button.type = "submit";
+    button.textContent = "Inscreva-se";
+    button.className = "btn btn-sm btn-success";
+
+    form.appendChild(inputEmail);
+    form.appendChild(button);
+    header.appendChild(form);
   };
-  reader.readAsDataURL(logoFile);
 
-  // Adicionar texto
-  if (headerText) {
-    const text = document.createElement("p");
-    text.textContent = headerText;
-    text.style.fontSize = `${fontSize}px`;
-    header.appendChild(text);
+  // Se houver imagem, carregar primeiro
+  if (logoFile && logoFile.type.startsWith("image/")) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      montarHeader(e.target.result);
+    };
+    reader.readAsDataURL(logoFile);
+  } else {
+    montarHeader(); // Sem imagem
   }
+});
 
-  // Adicionar formulário (terceiro elemento)
-  const form = document.createElement("form");
-  form.onsubmit = e => e.preventDefault(); // não envia de verdade
-  const inputEmail = document.createElement("input");
-  inputEmail.type = "email";
-  inputEmail.placeholder = "Seu e-mail";
-  inputEmail.className = "form-control";
-  inputEmail.style.width = "180px";
-  const button = document.createElement("button");
-  button.type = "submit";
-  button.textContent = "Inscreva-se";
-  button.className = "btn btn-sm btn-success";
-  form.appendChild(inputEmail);
-  form.appendChild(button);
-  header.appendChild(form);
+
+// ✅ Botão para limpar todos os campos
+document.getElementById("clearFields").addEventListener("click", () => {
+  document.getElementById("logoFile").value = "";
+  document.getElementById("headerText").value = "";
+  document.getElementById("bgColor").value = "#ffffff";
+  document.getElementById("textColor").value = "#000000";
+  document.getElementById("fontSize").value = "18";
+  document.getElementById("textAlign").value = "center";
+  document.getElementById("borderStyle").value = "solid";
+  document.getElementById("headerHeight").value = "200";
+  document.getElementById("gapSize").value = "20";
+  document.getElementById("msg").textContent = "";
+  document.getElementById("generatedHeader").innerHTML = "";
 });

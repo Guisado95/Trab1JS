@@ -1,0 +1,35 @@
+document.getElementById("applyChanges").addEventListener("click", () => {
+  const logoFile = document.getElementById("logoFile").files[0];
+  const headerText = document.getElementById("headerText").value;
+  const bgColor = document.getElementById("bgColor").value;
+  const textColor = document.getElementById("textColor").value;
+  const borderStyle = document.getElementById("borderStyle").value;
+  const headerHeight = document.getElementById("headerHeight").value;
+
+  const header = document.getElementById("generatedHeader");
+  header.innerHTML = "";
+
+  header.style.backgroundColor = bgColor;
+  header.style.color = textColor;
+  header.style.border = `2px ${borderStyle} ${textColor}`;
+  header.style.height = `${headerHeight}px`;
+
+  // Inserir imagem, se selecionada
+  if (logoFile && logoFile.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const img = document.createElement("img");
+      img.src = e.target.result;
+      img.alt = "Logo";
+      header.appendChild(img);
+    };
+    reader.readAsDataURL(logoFile);
+  }
+
+  // Inserir texto
+  if (headerText) {
+    const text = document.createElement("p");
+    text.textContent = headerText;
+    header.appendChild(text);
+  }
+});

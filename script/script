@@ -1,94 +1,110 @@
-document.getElementById("applyChanges").addEventListener("click", () => {
-  const logoFile = document.getElementById("logoFile").files[0];
-  const headerText = document.getElementById("headerText").value.trim();
-  const bgColor = document.getElementById("bgColor").value;
-  const textColor = document.getElementById("textColor").value;
-  const fontSize = document.getElementById("fontSize").value;
-  const textAlign = document.getElementById("textAlign").value;
-  const borderStyle = document.getElementById("borderStyle").value;
-  const headerHeight = document.getElementById("headerHeight").value;
-  const gapSize = document.getElementById("gapSize").value;
+const elementType = document.getElementById('elementType');
+const elementContent = document.getElementById('elementContent');
+const elementImage = document.getElementById('elementImage');
+const bgColor = document.getElementById('bgColor');
+const textColor = document.getElementById('textColor');
+const borderStyle = document.getElementById('borderStyle');
+const elementSize = document.getElementById('elementSize');
+const addElementButton = document.getElementById('addElementButton');
+const clearFields = document.getElementById('clearFields');
+const headerPreview = document.getElementById('headerPreview');
+const headerBgColor = document.getElementById('headerBgColor');
 
-  const msg = document.getElementById("msg");
-  msg.textContent = "";
+let editingElement = null;
 
-  const header = document.getElementById("generatedHeader");
-  header.innerHTML = "";
+// FUNDO DO CABEÇALHO
+headerBgColor.addEventListener('input', () => {
+  headerPreview.style.backgroundColor = headerBgColor.value;
+});
 
-  // Aplicar estilos no contêiner
-  header.style.backgroundColor = bgColor;
-  header.style.color = textColor;
-  header.style.border = `2px ${borderStyle} ${textColor}`;
-  header.style.height = `${headerHeight}px`;
-  header.style.gap = `${gapSize}px`;
-  header.style.justifyContent = textAlign;
-  header.style.display = "flex";
-  header.style.flexWrap = "wrap";
-  header.style.alignItems = "center";
-  header.style.padding = "1rem";
-
-  // Função para adicionar elementos ao header após leitura da imagem
-  const montarHeader = (imageDataURL = null) => {
-    // Adicionar imagem, se houver
-    if (imageDataURL) {
-      const img = document.createElement("img");
-      img.src = imageDataURL;
-      img.alt = "Logo";
-      header.appendChild(img);
-    }
-
-    // Adicionar texto, se houver
-    if (headerText) {
-      const text = document.createElement("p");
-      text.textContent = headerText;
-      text.style.fontSize = `${fontSize}px`;
-      header.appendChild(text);
-    }
-
-    // Adicionar formulário
-    const form = document.createElement("form");
-    form.onsubmit = e => e.preventDefault();
-
-    const inputEmail = document.createElement("input");
-    inputEmail.type = "email";
-    inputEmail.placeholder = "Seu e-mail";
-    inputEmail.className = "form-control";
-    inputEmail.style.width = "180px";
-
-    const button = document.createElement("button");
-    button.type = "submit";
-    button.textContent = "Inscreva-se";
-    button.className = "btn btn-sm btn-success";
-
-    form.appendChild(inputEmail);
-    form.appendChild(button);
-    header.appendChild(form);
-  };
-
-  // Se houver imagem, carregar primeiro
-  if (logoFile && logoFile.type.startsWith("image/")) {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      montarHeader(e.target.result);
-    };
-    reader.readAsDataURL(logoFile);
+// IMAGEM OU TEXTO
+elementType.addEventListener('change', () => {
+  if (elementType.value === 'image') {
+    elementContent.classList.add('d-none');
+    elementImage.classList.remove('d-none');
   } else {
-    montarHeader(); // Sem imagem
+    elementContent.classList.remove('d-none');
+    elementImage.classList.add('d-none');
   }
 });
 
+// ADICIONA NOVO ELEMENTO
+addElementButton.addEventListener('click', () => {
+  if (!editingElement && headerPreview.children.length >= 3) {
+    alert('Você só pode adicionar até 3 elementos.');
+    return;
+  }
 
-// ✅ Botão para limpar todos os campos
-document.getElementById("clearFields").addEventListener("click", () => {
-  document.getElementById("logoFile").value = "";
-  document.getElementById("headerText").value = "";
-  document.getElementById("bgColor").value = "#ffffff";
-  document.getElementById("textColor").value = "#000000";
-  document.getElementById("fontSize").value = "18";
-  document.getElementById("textAlign").value = "center";
-  document.getElementById("borderStyle").value = "solid";
-  document.getElementById("headerHeight").value = "200";
-  document.getElementById("gapSize").value = "20";
-  document.getElementById("msg").textContent = "";
-  document.getElementById("generatedHeader").innerHTML = "";
+  if (elementType.value === 'text' && !elementContent.value.trim()) {
+    alert('Digite algum texto para o elemento.');
+    return;
+  }
+
+  const element = editingElement || document.createElement('div');
+  element.classList.add('element-preview');
+  element.style.backgroundColor = bgColor.value;
+  element.style.border = `2px ${borderStyle.value} black`;
+  element.style.width = `${elementSize.value || 200}px`;
+  element.style.height = `${elementSize.value || 200}px`;
+  element.style.display = 'flex';
+  element.style.alignItems = 'center';
+  element.style.justifyContent = 'center';
+  element.style.color = textColor.value;
+  element.innerHTML = ''; 
+
+  if (elementType.value === 'text') {
+    const text = document.createElement('p');
+    text.textContent = elementContent.value;
+    element.appendChild(text);
+  } else if (elementType.value === 'image') {
+    if (!elementImage.files[0]) {
+      alert('Você precisa escolher uma imagem.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.style.maxWidth = '100%';
+      img.style.maxHeight = '100%';
+      element.appendChild(img);
+
+      // ADICIONA AO DOM
+      if (!editingElement) {
+        headerPreview.appendChild(element);
+        element.addEventListener('click', () => editElement(element));
+      }
+    };
+    reader.readAsDataURL(elementImage.files[0]);
+  }
+
+  if (elementType.value === 'text') {
+    if (!editingElement) {
+      headerPreview.appendChild(element);
+      element.addEventListener('click', () => editElement(element));
+    }
+  }
+  editingElement = null;
+  resetForm();
 });
+
+// LIMPA OS CAMPOS
+clearFields.addEventListener('click', () => {
+  resetForm();
+  headerPreview.innerHTML = '';
+  headerPreview.style.backgroundColor = '#ffffff';
+});
+
+// RESETA OS INPUTS
+function resetForm() {
+  elementType.value = 'text';
+  elementContent.value = '';
+  elementImage.value = '';
+  bgColor.value = '#ffffff';
+  textColor.value = '#000000';
+  borderStyle.value = 'none';
+  elementSize.value = '200';
+  elementContent.classList.remove('d-none');
+  elementImage.classList.add('d-none');
+  editingElement = null;
+}
